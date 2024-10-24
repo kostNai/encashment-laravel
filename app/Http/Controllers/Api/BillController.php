@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bill;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 
 class BillController extends Controller
@@ -12,7 +14,18 @@ class BillController extends Controller
      */
     public function index()
     {
-        //
+        try{
+            $bills = Bill::all();
+            return response()->json([
+                'status'=>true,
+                'bills'=>$bills
+            ]);
+        }catch(HttpResponseException $exception){
+            return response()->json([
+                'status'=>false,
+                'message'=>$exception->getMessage()
+            ],$exception->getCode());
+        }
     }
 
     /**
@@ -28,7 +41,20 @@ class BillController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $new_bill  = Bill::create([
+                'denomination'=>$request->denomination
+            ]);
+            return response()->json([
+                'status'=>true,
+                'bill'=>$new_bill
+            ]);
+        }catch (HttpResponseException $exception){
+            return response()->json([
+                'status'=>false,
+                'message'=>$exception->getMessage()
+            ],$exception->getCode());
+        }
     }
 
     /**

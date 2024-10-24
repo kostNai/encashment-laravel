@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('operations', function (Blueprint $table) {
             $table->id();
-            $table->uuid('number')->unique();
-            $table->integer('user_id');
+            $table->string('number')->unique();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */

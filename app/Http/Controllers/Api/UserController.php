@@ -43,7 +43,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-//        dd($request);
         if(!$request->username){
             return response()->json([
                 'status'=>false,
@@ -74,7 +73,9 @@ class UserController extends Controller
                 'username'=>$request->username,
                 'email'=>$request->email,
                 'password'=>Hash::make($request->password),
-                'is_admin'=>$request->is_admin?$request->is_admin:0
+                'is_admin'=>$request->is_admin,
+                'pharmacy_number'=>$request->pharmacy_number
+
             ]);
 
             return response()->json([

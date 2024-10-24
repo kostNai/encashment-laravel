@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bills_operations', function (Blueprint $table) {
+        Schema::create('bill_operation', function (Blueprint $table) {
             $table->id();
-            $table->integer('bill_id');
-            $table->integer('operation_id');
+            $table->foreignId('bill_id');
+            $table->foreignId('operation_id');
+            $table->integer('bills_count')->default(0);
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bills_operations');
+        Schema::dropIfExists('bill_operation');
     }
 };

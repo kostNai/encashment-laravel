@@ -14,7 +14,6 @@ class AuthController extends Controller
         $username = $request->username;
         $password = $request->password;
         $user = User::where('username',$username)->first();
-        dd($user->password);
 
         if(!$username || !$password){
             return response()->json([
@@ -22,13 +21,13 @@ class AuthController extends Controller
                 'message'=>'Усі поля мають бути заповнені'
             ],500);
         }
-        if($username!==$user->username){
+        if(!$user){
             return response()->json([
                 'status'=>false,
                 'message'=>'Невірний логін'
             ],404);
         }
-        if(!Hash::check($user->password,$password)){
+        if(!Hash::check($password,$user->password)){
             return response()->json([
                 'status'=>false,
                 'message'=>'Невірний пароль'

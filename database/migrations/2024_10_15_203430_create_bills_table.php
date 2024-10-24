@@ -14,11 +14,9 @@ return new class extends Migration
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
             $table->integer('denomination');
-            $table->integer('bill_count');
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */
