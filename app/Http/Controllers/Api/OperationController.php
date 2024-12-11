@@ -17,7 +17,18 @@ class OperationController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $operations = Operation::with('user')->get();
+            return response()->json([
+                'status'=>true,
+                'operations'=>$operations
+            ]);
+        }catch(HttpResponseException $exception){
+            return response()->json([
+                'status'=>false,
+                'message'=>$exception->getMessage()
+            ],$exception->getCode());
+        }
     }
 
     /**
@@ -34,37 +45,38 @@ class OperationController extends Controller
     public function store(Request $request)
     {
         $number = Carbon::now()->getTimestamp();
-        $user = User::where('id',$request->user_id)->first();
-        if(!$user){
+        $user = User::where('id', $request->user_id)->first();
+        if (!$user) {
             return response()->json([
-                'status'=>false,
-                'message'=>'User not found'
-            ],404);
+                'status' => false,
+                'message' => 'User not found'
+            ], 404);
         }
         try {
             $newOperation = Operation::create([
-                'number'=>$number,
-                'user_id'=>$user->id,
+                'number' => $number,
+                'user_id' => $user->id,
+                'total_sum'=>$request->total_sum
             ]);
             $data = $request->operation;
-            $operation = Operation::where('id',$newOperation->id)->first();
-            foreach($data as $key=>$value) {
+            $operation = Operation::where('id', $newOperation->id)->first();
+            foreach ($data as $key => $value) {
                 $bill = json_decode(json_encode($value), FALSE);
-                $current_bill = Bill::where('denomination',$bill->denomination)->first();
+                $current_bill = Bill::where('denomination', $bill->denomination)->first();
                 $operation->bills()->attach([$current_bill->id]);
                 $operation->bills()->updateExistingPivot($current_bill->id, [
                     'bills_count' => $operation->bills()->find($current_bill->id)->pivot->bills_count + $bill->bills_count
                 ]);
             }
             return response()->json([
-                'status'=>true,
-                'operation'=>$newOperation
+                'status' => true,
+                'operation' => $newOperation
             ]);
-        }catch(HttpResponseException $exception){
+        } catch (HttpResponseException $exception) {
             return response()->json([
-                'status'=>false,
-                'message'=>$exception->getMessage()
-            ],$exception->getCode());
+                'status' => false,
+                'message' => $exception->getMessage()
+            ], $exception->getCode());
         }
     }
 
@@ -73,7 +85,19 @@ class OperationController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $operation = Operation::where('id',$id)->first();
+
+        if(!$operation){
+            return response()->json([
+                'status'=>false,
+                'message'=>'Operation not found'
+            ],404);
+        }
+
+        return response()->json([
+            'status'=>true,
+            'operation'=>$operation
+        ]);
     }
 
     /**
@@ -97,6 +121,27 @@ class OperationController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $operation = Operation::where('id',$id)->first();
+        
+        if(!$operation){
+            return response()->json([
+                'status'=>false,
+                'message'=>'Operation not found'
+            ],404);
+        }
+
+        try{
+            $operation->delete();
+
+            return response()->json([
+                'stataus'=>true,
+                'message'=>'Success'
+            ]);
+        }catch(HttpResponseException $exception){
+            return response()->json([
+                'status'=>false,
+                'message'=>$exception->getMessage()
+            ],$exception->getCode());
+        }
     }
 }

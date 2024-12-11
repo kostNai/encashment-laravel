@@ -10,10 +10,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Operation extends Model
 {
-    protected $fillable = ['number','user_id','bill_id'];
+    protected $fillable = ['number','user_id','total_sum'];
 
     public function user():HasOne{
-        return $this->hasOne(User::class);
+        return $this->hasOne(User::class,'id','user_id');
     }
     public function bills():BelongsToMany{
         return $this->belongsToMany(Bill::class);
